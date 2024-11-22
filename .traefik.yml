@@ -1,0 +1,7 @@
+displayName: Convert any HEAD request to a GET
+type: middleware
+import: github.com/cdwiegand/traefik-head-to-get
+basePkg: head_to_get
+summary: 'Converts any HEAD request to a GET'
+testData:
+  newMethod: GET

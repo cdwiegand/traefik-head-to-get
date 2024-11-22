@@ -1,0 +1,12 @@
+http:
+  middlewares:
+    head-to-get:
+      plugin:
+        head_to_get:
+          removeExposingHeaders: true
+  routers:
+    test:
+      rule: "PathPrefix(`/`)"
+      middlewares:
+        - head-to-get
+      service: api@internal
