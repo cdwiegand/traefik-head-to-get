@@ -7,41 +7,89 @@ import (
 	"testing"
 )
 
-func TestServeHTTP(t *testing.T) {
-	tests := []struct {
-		name       string
-		config     *Config
-		assertFunc func(t *testing.T) http.Handler
-	}{
-		{
-			name:   "default config",
-			config: &Config{},
-			assertFunc: func(t *testing.T) http.Handler {
-				t.Helper()
-				return http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
-					if req.Method == "HEAD" {
-						t.Fatalf("HEAD must become GET!")
-					}
-				})
-			},
-		},
-	}
+func TestServeHTTP_Head(t *testing.T) {
+	t.Run("test using HEAD", func(t *testing.T) {
+		ctx := context.Background()
+		next := http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {})
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			ctx := context.Background()
+		cfg := CreateConfig()
+		handler, err := New(ctx, next, cfg, "head-to-get")
+		if err != nil {
+			t.Fatal(err)
+		}
 
-			handler, err := New(ctx, tt.assertFunc(t), tt.config, "head-to-get-test")
-			if err != nil {
-				t.Fatalf("error creating new plugin instance: %+v", err)
-			}
-			recorder := httptest.NewRecorder()
-			req, err := http.NewRequestWithContext(ctx, http.MethodHead, "http://localhost/", nil)
-			if err != nil {
-				t.Fatalf("error with request: %+v", err)
-			}
+		recorder := httptest.NewRecorder()
+		req, err := http.NewRequestWithContext(ctx, http.MethodHead, "http://localhost/", nil)
+		if err != nil {
+			t.Fatalf("error with request: %+v", err)
+		}
 
-			handler.ServeHTTP(recorder, req)
-		})
-	}
+		handler.ServeHTTP(recorder, req)
+
+		t.Helper()
+		if req.Method != http.MethodGet {
+			t.Fatalf("Method should be GET, was " + req.Method)
+		}
+		if req.Header.Get("Content-Type") != "" {
+			t.Fatalf("Content-type header should not be present in response!")
+		}
+	})
+}
+
+func TestServeHTTP_Get(t *testing.T) {
+	t.Run("test using HEAD", func(t *testing.T) {
+		ctx := context.Background()
+		next := http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {})
+
+		cfg := CreateConfig()
+		handler, err := New(ctx, next, cfg, "head-to-get")
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		recorder := httptest.NewRecorder()
+		req, err := http.NewRequestWithContext(ctx, http.MethodGet, "http://localhost/", nil)
+		if err != nil {
+			t.Fatalf("error with request: %+v", err)
+		}
+
+		handler.ServeHTTP(recorder, req)
+
+		t.Helper()
+		if req.Method != http.MethodGet {
+			t.Fatalf("Method should be GET, was " + req.Method)
+		}
+		if req.Header.Get("Content-Type") != "" {
+			t.Fatalf("Content-type header should not be present in response!")
+		}
+	})
+}
+
+func TestServeHTTP_Post(t *testing.T) {
+	t.Run("test using HEAD", func(t *testing.T) {
+		ctx := context.Background()
+		next := http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {})
+
+		cfg := CreateConfig()
+		handler, err := New(ctx, next, cfg, "head-to-get")
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		recorder := httptest.NewRecorder()
+		req, err := http.NewRequestWithContext(ctx, http.MethodPost, "http://localhost/", nil)
+		if err != nil {
+			t.Fatalf("error with request: %+v", err)
+		}
+
+		handler.ServeHTTP(recorder, req)
+
+		t.Helper()
+		if req.Method != http.MethodPost {
+			t.Fatalf("Method should be POST, was " + req.Method)
+		}
+		if req.Header.Get("Content-Type") != "" {
+			t.Fatalf("Content-type header should not be present in response!")
+		}
+	})
 }

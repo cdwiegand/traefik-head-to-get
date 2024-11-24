@@ -3,7 +3,7 @@ http:
     head-to-get:
       plugin:
         head_to_get:
-          removeExposingHeaders: true
+          putOriginalMethodInHeader: "X-Original-Request-Method"
   routers:
     test:
       rule: "PathPrefix(`/`)"

@@ -4,4 +4,4 @@ import: github.com/cdwiegand/traefik-head-to-get
 basePkg: head_to_get
 summary: 'Converts any HEAD request to a GET'
 testData:
-  newMethod: GET
+  putOriginalMethodInHeader: X-Original-Method
